@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vườn Bình Yên – Game KHTN 7 Vật lí</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌿</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&subset=vietnamese&display=swap" rel="stylesheet">
+<style>
+/* Vườn Bình Yên – giao diện "hacker xanh" */
+:root{--bg:#020a06;--card:#04140cdd;--t:#c8ffd9;--m:#5fae80;--g:#00ff88;--g2:#00ff8822;--gd:#00b862;--l:#0f3d26;--cy:#3df0ff;--lime:#b6ff3d;--tl:#2bd9a8;--mint:#7dffc4;
+--glow:0 0 8px #00ff8866,0 0 22px #00ff8822;--mono:"JetBrains Mono","Cascadia Mono","Courier New","Noto Sans Mono","DejaVu Sans Mono",monospace}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{font:500 16px/1.5 var(--mono);color:var(--t);background:radial-gradient(ellipse at top,#062a17 0%,var(--bg) 65%);min-height:100vh;
+padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px);overflow-x:hidden}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;background:repeating-linear-gradient(0deg,#0000 0 2px,#00000022 2px 3px)}
+#rain{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.35}
+.w{position:relative;z-index:1;max-width:820px;margin:0 auto;padding:14px}
+.card{background:var(--card);border:1px solid var(--l);border-radius:10px;box-shadow:var(--glow),inset 0 0 40px #00ff880a;padding:20px;margin-bottom:14px;backdrop-filter:blur(3px);position:relative}
+.card::before{content:"● ● ●";position:absolute;top:6px;left:12px;font-size:9px;letter-spacing:3px;color:#1d6b43}
+h1{font-size:38px;line-height:1.1;margin:8px 0 6px;color:var(--g);font-weight:800;text-shadow:0 0 12px #00ff88aa;letter-spacing:1px}
+h1::after{content:"_";animation:blink 1s steps(1) infinite}
+h2{font-size:22px;margin:6px 0 10px;font-weight:800;color:var(--g);text-shadow:0 0 8px #00ff8877}
+h2::before{content:"> ";color:var(--m)}
+@keyframes blink{50%{opacity:0}}
+p{margin:6px 0}.m{color:var(--m)}.c{text-align:center}.small{font-size:13px}.err{color:#ff7b9c;min-height:1.2em;margin:8px 0 0}
+.cmt{color:var(--m);font-size:13px}.cmt::before{content:"// "}
+.btn{display:block;width:100%;border:1px solid var(--g);border-radius:8px;padding:13px 16px;font:700 17px var(--mono);cursor:pointer;color:#001a0c;background:var(--g);
+box-shadow:0 0 14px #00ff8866;margin-top:10px;transition:transform .08s,box-shadow .2s;text-transform:none}
+.btn:hover{box-shadow:0 0 24px #00ff88aa}
+.btn:active{transform:translateY(2px)}
+.btn.s{background:transparent;color:var(--g);box-shadow:none}
+.btn.s:hover{background:var(--g2)}
+.btn.s.on{background:var(--g2);box-shadow:inset 0 0 0 1px var(--g),0 0 12px #00ff8855}
+.btn.p{background:var(--cy);border-color:var(--cy);box-shadow:0 0 14px #3df0ff66}
+.btn.o{background:var(--lime);border-color:var(--lime);box-shadow:0 0 14px #b6ff3d66}
+.btn.r{background:transparent;color:#ff7b9c;border-color:#ff7b9c;box-shadow:none}
+.btn:disabled{opacity:.45;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1}
+input[type=text],input[type=password]{width:100%;padding:11px 14px;border-radius:8px;border:1px solid var(--l);font:600 18px var(--mono);color:var(--g);background:#010805;caret-color:var(--g)}
+input:focus{outline:none;border-color:var(--g);box-shadow:0 0 12px #00ff8855}
+input::placeholder{color:#2c6b4a}
+.av{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:10px 0}
+.av button,.mood button{font-size:30px;border:1px solid var(--l);background:#010805;border-radius:8px;padding:6px 0;cursor:pointer}
+.av button.on,.mood button.on{border-color:var(--g);background:var(--g2);box-shadow:0 0 12px #00ff8866}
+.mood{display:flex;gap:8px;margin:8px 0}.mood button{flex:1}
+.lbl{font-weight:700;margin-top:16px;color:var(--cy)}
+.lbl::before{content:"$ ";color:var(--m)}
+.top{position:relative;z-index:1;display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--l);border-radius:10px;padding:8px 12px;box-shadow:var(--glow);margin-bottom:12px}
+.top .me{font-size:28px}.top .nm{font-weight:800;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--g)}
+.pill{border:1px solid var(--lime);color:var(--lime);border-radius:6px;padding:2px 10px;font-weight:800;white-space:nowrap;font-size:14px}
+.pill.tm{border-color:var(--cy);color:var(--cy)}
+.ic{border:1px solid var(--l);background:#010805;border-radius:6px;font-size:18px;padding:3px 7px;cursor:pointer}
+.ic:hover{border-color:var(--g)}
+.garden{position:relative;z-index:1;display:flex;flex-wrap:wrap;gap:2px;font-size:22px;min-height:38px;padding:6px 10px;border-radius:8px;border:1px dashed #1d6b43;background:linear-gradient(#00ff8808,#00ff8818);margin-bottom:12px;align-items:flex-end}
+.garden span{animation:pop .5s ease;filter:drop-shadow(0 0 4px #00ff8866)}
+.garden .e{color:var(--m);font-size:13px;filter:none}
+@keyframes pop{0%{transform:scale(0) translateY(10px)}70%{transform:scale(1.3)}100%{transform:scale(1)}}
+.tag{display:inline-block;border:1px solid var(--g);color:var(--g);border-radius:4px;padding:1px 10px;font-weight:700;font-size:13px;background:var(--g2)}
+.q{font-size:21px;font-weight:700;margin:12px 0 4px;color:#eafff1}
+.ans{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.ans button{position:relative;border:1px solid;border-radius:8px;padding:16px 14px 16px 44px;min-height:84px;font:700 16px/1.3 var(--mono);cursor:pointer;text-align:left;background:#010805;transition:transform .08s,background .15s}
+.ans button::before{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:15px;opacity:.9}
+.ans .b0{color:var(--g);border-color:var(--g)}.ans .b0::before{content:"[A]"}
+.ans .b1{color:var(--cy);border-color:var(--cy)}.ans .b1::before{content:"[B]"}
+.ans .b2{color:var(--lime);border-color:var(--lime)}.ans .b2::before{content:"[C]"}
+.ans .b3{color:var(--mint);border-color:var(--mint)}.ans .b3::before{content:"[D]"}
+.ans button:hover{background:#00ff8814;box-shadow:0 0 14px currentColor}
+.ans button:active{transform:translateY(2px)}
+.ans button.dim{opacity:.25}.ans button.ok{background:#00ff8826;box-shadow:0 0 18px currentColor}
+@media(max-width:560px){.ans{grid-template-columns:1fr}.ans button{min-height:58px}h1{font-size:30px}}
+.boxes{display:flex;gap:12px;margin-top:12px}
+.boxes button{flex:1;border:1px solid var(--g);background:#010805;border-radius:8px;padding:14px 6px;cursor:pointer;font:700 14px var(--mono);color:var(--g)}
+.boxes button:hover{box-shadow:0 0 18px #00ff8888;background:var(--g2)}
+.boxes button .e{font-size:46px;display:block;animation:bob 2s ease-in-out infinite;filter:drop-shadow(0 0 6px #00ff8899)}
+.boxes button:nth-child(2) .e{animation-delay:.3s}.boxes button:nth-child(3) .e{animation-delay:.6s}
+@keyframes bob{50%{transform:translateY(-6px) rotate(-4deg)}}
+.reveal{font-size:66px;animation:pop .6s ease;filter:drop-shadow(0 0 12px #00ff88)}
+.msg{border-left:3px solid #ffb86b;background:#ffb86b12;border-radius:4px;padding:10px 14px;margin-top:12px}
+.msg.ok{border-color:var(--g);background:var(--g2)}
+.breath{width:190px;height:190px;margin:22px auto;border-radius:50%;border:2px solid var(--g);background:radial-gradient(circle,#00ff8833,#00ff8808 70%);display:flex;align-items:center;justify-content:center;
+font-weight:800;font-size:19px;color:var(--g);transform:scale(.6);transition:transform 4s ease-in-out;box-shadow:0 0 30px #00ff8855,inset 0 0 30px #00ff8833;text-shadow:0 0 8px #00ff88}
+.lb{list-style:none;padding:0;margin:8px 0}
+.lb li{display:flex;align-items:center;gap:10px;border:1px solid var(--l);background:#010805;border-radius:6px;padding:7px 12px;margin:6px 0}
+.lb .r{font-weight:800;width:30px;color:var(--m)}.lb .a{font-size:24px}.lb .n{flex:1;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb .s{font-weight:800;color:var(--lime)}.lb li.me{border-color:var(--g);background:var(--g2)}
+.lb .off{opacity:.45}
+.lb .x{border:1px solid #ff7b9c55;color:#ff7b9c;background:none;border-radius:4px;cursor:pointer;font:600 12px var(--mono);padding:2px 6px}
+.code{font-size:72px;font-weight:800;letter-spacing:14px;color:var(--g);text-align:center;line-height:1.1;text-shadow:0 0 20px #00ff88,0 0 40px #00ff8866}
+.stat{display:flex;gap:10px;margin:12px 0}.stat div{flex:1;border:1px solid var(--l);background:#010805;border-radius:8px;padding:10px;text-align:center;font-size:13px;color:var(--m)}
+.stat b{display:block;font-size:24px;color:var(--g);text-shadow:0 0 8px #00ff8877}
+.hide{display:none!important}
+.float{position:fixed;left:50%;top:40%;transform:translateX(-50%);font-size:36px;font-weight:800;color:var(--lime);text-shadow:0 0 14px var(--lime);pointer-events:none;animation:up 1.2s ease forwards;z-index:60}
+@keyframes up{to{transform:translate(-50%,-80px);opacity:0}}
+.leaf{position:fixed;top:-40px;font-size:22px;pointer-events:none;animation:fall linear forwards;z-index:2;opacity:.6}
+@keyframes fall{to{transform:translateY(110vh) rotate(360deg)}}
+details summary{cursor:pointer;color:var(--cy)}
+.term{font-size:13px;color:var(--m);text-align:left;margin:10px 0 0;min-height:4.6em;white-space:pre-wrap}
+.term b{color:var(--g)}
+a{color:var(--cy)}
+.chk{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.chk label{border:1px solid var(--l);border-radius:6px;padding:4px 10px;font-size:13px;cursor:pointer;background:#010805}
+.chk label.on{border-color:var(--g);color:var(--g);background:var(--g2)}
+.chk input{display:none}
+.grid2{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}
+@media(max-width:760px){.grid2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="w" id="app"></div>
+<script>
+// Mưa ký tự code kiểu "hacker" – rơi chậm, dịu mắt. Ký tự lấy từ công thức Vật lí 7.
+(function(){
+  const cv=document.createElement("canvas");cv.id="rain";document.body.prepend(cv);
+  const ctx=cv.getContext("2d");
+  const TOK="v=s/t 01 Hz dB N S i=i' km/h m/s 3,6 1/15 20000 λ ∆ Φ B ⚡ ☀ { } < > / = + 0 1 0 1 ア イ ウ エ".split(" ").join("").split("");
+  const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let W,H,cols,drops,fs=16;
+  function rs(){W=cv.width=innerWidth;H=cv.height=innerHeight;cols=Math.ceil(W/fs);drops=Array.from({length:cols},()=>Math.random()*-H/fs)}
+  addEventListener("resize",rs);rs();
+  let last=0;
+  function draw(t){requestAnimationFrame(draw);if(t-last<70)return;last=t;
+    ctx.fillStyle="rgba(2,10,6,0.12)";ctx.fillRect(0,0,W,H);
+    ctx.font=fs+"px JetBrains Mono, monospace";
+    for(let i=0;i<cols;i++){
+      const ch=TOK[Math.random()*TOK.length|0],y=drops[i]*fs;
+      ctx.fillStyle=Math.random()<.04?"#d8ffe6":(i%3?"#00ff88":"#3df0ff");
+      ctx.fillText(ch,i*fs,y);
+      if(y>H&&Math.random()>.975)drops[i]=0;
+      drops[i]+=.55;
+    }
+  }
+  if(!reduce)requestAnimationFrame(draw);
+  // Gõ chữ kiểu terminal: typeLines(el, ["dòng 1","dòng 2"])
+  window.typeLines=function(el,lines,speed=18){if(!el)return;el.textContent="";let i=0,j=0;
+    (function step(){if(!el.isConnected||i>=lines.length)return;if(j<=lines[i].length){el.textContent=lines.slice(0,i).join("\n")+(i?"\n":"")+lines[i].slice(0,j)+"▌";j++;setTimeout(step,speed)}
+    else{i++;j=0;setTimeout(step,180)}})()};
+})();
+</script>
+<script>
+// Ngân hàng câu hỏi KHTN 7 – Vật lí bài 8–20. Mỗi câu: [bài, câu hỏi, [4 đáp án], chỉ số đáp án đúng, giải thích]
+// Muốn thêm câu: thêm một dòng cùng dạng vào mảng Q.
+window.Q=[
+[8,"Công thức tính tốc độ là:",["v = s/t","v = s·t","v = t/s","v = s + t"],0,"Tốc độ = quãng đường chia thời gian: v = s/t."],
+[8,"1 m/s bằng bao nhiêu km/h?",["3,6 km/h","36 km/h","1000 km/h","0,36 km/h"],0,"1 m/s = 3600 m/h = 3,6 km/h."],
+[8,"Bạn An đi bộ 600 m trong 300 s. Tốc độ của An là:",["2 m/s","3 m/s","0,5 m/s","180 m/s"],0,"v = s/t = 600/300 = 2 m/s."],
+[9,"Trong phòng thí nghiệm, dụng cụ đo thời gian chính xác để đo tốc độ là:",["Cổng quang điện nối đồng hồ hiện số","Nhiệt kế","Lực kế","Cân đồng hồ"],0,"Cổng quang điện bật/tắt đồng hồ hiện số khi vật đi qua nên đo thời gian rất chính xác."],
+[9,"Muốn đo tốc độ của một vật, ta cần đo:",["Quãng đường và thời gian","Khối lượng và thời gian","Nhiệt độ và quãng đường","Lực và khối lượng"],0,"Đo s và t rồi tính v = s/t."],
+[9,"Thiết bị \"bắn tốc độ\" của cảnh sát giao thông dùng để:",["Đo tốc độ của xe","Đo khối lượng xe","Đo độ ồn của xe","Đo nhiệt độ động cơ"],0,"Thiết bị bắn tốc độ đo tốc độ xe để kiểm tra việc chấp hành tốc độ quy định."],
+[10,"Vật đứng yên thì đồ thị quãng đường – thời gian là:",["Đường nằm ngang","Đường thẳng xiên lên","Đường cong đi xuống","Đường thẳng đứng"],0,"Đứng yên: thời gian trôi nhưng quãng đường không đổi → đồ thị nằm ngang."],
+[10,"Hai xe chuyển động đều. Đồ thị s–t của xe nào dốc hơn thì xe đó:",["Có tốc độ lớn hơn","Có tốc độ nhỏ hơn","Đang đứng yên","Đi được ít quãng đường hơn"],0,"Đồ thị càng dốc → cùng thời gian đi được quãng đường dài hơn → tốc độ lớn hơn."],
+[10,"Đồ thị s–t của vật chuyển động đều có dạng:",["Đường thẳng xiên lên","Đường tròn","Đường nằm ngang","Đường gấp khúc đi xuống"],0,"Chuyển động đều: s tăng đều theo t → đường thẳng xiên lên."],
+[11,"Quãng đường dừng xe gồm:",["Quãng đường phản ứng + quãng đường phanh","Chỉ quãng đường phanh","Chỉ quãng đường phản ứng","Chiều dài của xe"],0,"Người lái cần thời gian phản ứng rồi mới phanh, nên quãng đường dừng = phản ứng + phanh."],
+[11,"Khi tốc độ xe tăng thì quãng đường dừng xe:",["Dài hơn","Ngắn hơn","Không đổi","Bằng 0"],0,"Tốc độ càng lớn, xe càng khó dừng → quãng đường dừng càng dài, tai nạn càng nghiêm trọng."],
+[11,"Trên đường ướt, trơn, quãng đường phanh sẽ:",["Dài hơn đường khô","Ngắn hơn đường khô","Bằng đường khô","Không phanh được"],0,"Đường trơn làm phanh kém hiệu quả → quãng đường phanh dài hơn. Hãy giữ khoảng cách an toàn nhé!"],
+[12,"Âm thanh KHÔNG truyền được trong môi trường nào?",["Chân không","Nước","Không khí","Thép"],0,"Âm cần các phân tử để truyền dao động; chân không không có phân tử nên âm không truyền được."],
+[12,"Âm truyền nhanh nhất trong:",["Thép","Nước","Không khí","Chân không"],0,"Tốc độ truyền âm: rắn > lỏng > khí. Trong thép khoảng 6100 m/s."],
+[12,"Các nguồn âm đều có chung đặc điểm:",["Đều dao động","Đều nóng lên","Đều phát sáng","Đều đứng yên"],0,"Âm thanh do các vật dao động phát ra."],
+[13,"Đơn vị của tần số là:",["Hertz (Hz)","Đêxiben (dB)","Mét (m)","Giây (s)"],0,"Tần số đo bằng hertz (Hz): số dao động trong 1 giây."],
+[13,"Biên độ dao động càng lớn thì âm phát ra:",["Càng to","Càng nhỏ","Càng cao","Càng trầm"],0,"Biên độ quyết định độ to; tần số quyết định độ cao."],
+[13,"Tai người bình thường nghe được âm có tần số:",["Từ 20 Hz đến 20 000 Hz","Dưới 20 Hz","Trên 20 000 Hz","Từ 0 đến 20 Hz"],0,"Dưới 20 Hz là hạ âm, trên 20 000 Hz là siêu âm — tai người không nghe được."],
+[14,"Ta nghe được tiếng vang khi âm phản xạ đến tai chậm hơn âm trực tiếp ít nhất:",["1/15 giây","1 giây","1/2 giây","1/100 giây"],0,"Âm phản xạ đến sau ít nhất 1/15 s thì tai phân biệt được → nghe tiếng vang."],
+[14,"Vật nào phản xạ âm tốt nhất?",["Tường gạch cứng, nhẵn","Rèm vải dày","Tấm xốp","Thảm len"],0,"Vật cứng, nhẵn phản xạ âm tốt; vật mềm, xốp hấp thụ âm tốt."],
+[14,"Cách nào giúp giảm tiếng ồn từ đường phố vào lớp học?",["Trồng cây xanh, đóng cửa kính","Mở toang cửa sổ","Bật loa thật to","Ốp tường bằng kim loại nhẵn"],0,"Cây xanh và cửa kính ngăn cách đường truyền âm, giúp lớp học yên tĩnh hơn."],
+[15,"Pin mặt trời biến năng lượng ánh sáng thành:",["Điện năng","Âm thanh","Khối lượng","Từ trường"],0,"Ánh sáng là một dạng năng lượng; pin mặt trời chuyển nó thành điện năng."],
+[15,"Trong môi trường trong suốt và đồng tính, ánh sáng truyền theo:",["Đường thẳng","Đường cong","Đường zíc-zắc","Đường tròn"],0,"Ánh sáng truyền thẳng — vì thế mới có bóng tối sau vật cản."],
+[15,"Vùng tối là vùng:",["Không nhận được ánh sáng từ nguồn","Nhận toàn bộ ánh sáng từ nguồn","Nhận một phần ánh sáng","Nằm ngay trước nguồn sáng"],0,"Vùng tối bị vật cản chắn hoàn toàn; vùng nửa tối nhận một phần ánh sáng."],
+[16,"Chiếu tia sáng tới gương phẳng với góc tới 40°. Góc phản xạ bằng:",["40°","50°","80°","20°"],0,"Định luật phản xạ ánh sáng: góc phản xạ bằng góc tới, i' = i."],
+[16,"Tia phản xạ nằm trong mặt phẳng chứa:",["Tia tới và pháp tuyến","Gương và vật","Tia tới và mặt gương","Hai pháp tuyến"],0,"Tia phản xạ nằm trong mặt phẳng chứa tia tới và pháp tuyến tại điểm tới."],
+[16,"Chiếu tia sáng vuông góc với mặt gương (góc tới 0°) thì tia phản xạ:",["Bật ngược trở lại theo phương cũ","Đi song song với gương","Biến mất","Tạo góc 90° với tia tới"],0,"i = 0° → i' = 0°, tia phản xạ trùng phương tia tới nhưng ngược chiều."],
+[17,"Ảnh của vật tạo bởi gương phẳng là:",["Ảnh ảo, lớn bằng vật","Ảnh thật, lớn hơn vật","Ảnh thật, hứng được trên màn","Ảnh ảo, nhỏ hơn vật"],0,"Ảnh qua gương phẳng là ảnh ảo, không hứng được trên màn, kích thước bằng vật."],
+[17,"Bạn đứng cách gương phẳng 1,5 m. Ảnh của bạn cách bạn:",["3 m","1,5 m","0,75 m","6 m"],0,"Ảnh cách gương 1,5 m ở phía sau gương → ảnh cách bạn 1,5 + 1,5 = 3 m."],
+[17,"Ảnh và vật qua gương phẳng:",["Đối xứng nhau qua gương","Luôn chồng lên nhau","Cách gương khác nhau","Ngược màu nhau"],0,"Ảnh và vật đối xứng qua gương: khoảng cách đến gương bằng nhau."],
+[18,"Nam châm KHÔNG hút vật làm bằng:",["Nhôm","Sắt","Niken","Thép"],0,"Nam châm hút sắt, thép, niken...; không hút nhôm, đồng, nhựa."],
+[18,"Đưa hai cực cùng tên của hai nam châm lại gần nhau thì chúng:",["Đẩy nhau","Hút nhau","Không tương tác","Hút rồi dính chặt"],0,"Cùng tên đẩy nhau, khác tên hút nhau."],
+[18,"Một nam châm có mấy cực?",["2 cực: Bắc (N) và Nam (S)","1 cực","3 cực","Không có cực"],0,"Mọi nam châm đều có hai cực: Bắc (N) và Nam (S)."],
+[19,"Bên ngoài nam châm, đường sức từ có chiều:",["Đi ra từ cực Bắc, đi vào cực Nam","Đi ra từ cực Nam, đi vào cực Bắc","Đi vòng tròn quanh tâm","Không có chiều xác định"],0,"Đường sức từ đi ra từ cực Bắc (N), đi vào cực Nam (S)."],
+[19,"Kim la bàn luôn chỉ hướng Bắc – Nam vì:",["Trái Đất là một nam châm khổng lồ","Gió thổi theo hướng Bắc","Kim la bàn rất nhẹ","Mặt Trời hút kim"],0,"Trái Đất có từ trường, kim nam châm của la bàn nằm dọc theo từ trường đó."],
+[19,"Ở nơi đường sức từ dày thì từ trường:",["Mạnh","Yếu","Bằng 0","Đổi chiều"],0,"Đường sức từ càng dày → từ trường càng mạnh (gần hai cực)."],
+[20,"Cách nào làm nam châm điện mạnh hơn?",["Tăng số vòng dây","Giảm số vòng dây","Bỏ lõi sắt ra","Ngắt công tắc"],0,"Tăng số vòng dây hoặc cường độ dòng điện thì nam châm điện mạnh hơn."],
+[20,"Lõi của nam châm điện nên làm bằng:",["Sắt non","Nhựa","Gỗ","Nhôm"],0,"Lõi sắt non làm từ trường mạnh lên nhiều và mất từ tính ngay khi ngắt điện."],
+[20,"Khi ngắt dòng điện, nam châm điện sẽ:",["Mất từ tính","Mạnh hơn","Đổi thành nam châm vĩnh cửu","Nóng chảy"],0,"Không có dòng điện thì không còn từ tính — nhờ vậy cần cẩu điện thả được sắt thép."]
+];
+window.LESSON={8:"Tốc độ chuyển động",9:"Đo tốc độ",10:"Đồ thị s–t",11:"Tốc độ & an toàn giao thông",12:"Sóng âm",13:"Độ to, độ cao của âm",14:"Phản xạ âm",15:"Năng lượng ánh sáng",16:"Phản xạ ánh sáng",17:"Ảnh qua gương phẳng",18:"Nam châm",19:"Từ trường",20:"Nam châm điện"};
+
+// ===== Chủ đề GIẢI TỎA CĂNG THẲNG (mã nhóm 31–36) =====
+window.Q.push(
+[31,"Căng thẳng (stress) là gì?",["Phản ứng tự nhiên của cơ thể và tâm trí trước áp lực, thử thách","Một bệnh truyền nhiễm","Chuyện chỉ người lớn mới gặp","Dấu hiệu của sự yếu đuối"],0,"Ai cũng có lúc căng thẳng. Đó là cách cơ thể phản ứng khi gặp áp lực — hiểu nó là bước đầu để kiểm soát nó."],
+[31,"Một chút căng thẳng trước bài kiểm tra có thể:",["Giúp bạn tập trung và cố gắng hơn","Luôn luôn có hại","Làm mất trí nhớ vĩnh viễn","Không ảnh hưởng gì cả"],0,"Căng thẳng vừa phải giúp tỉnh táo. Chỉ khi quá nhiều hoặc kéo dài nó mới gây hại."],
+[31,"Dấu hiệu nào thường gặp ở cơ thể khi căng thẳng?",["Tim đập nhanh, vai cứng, đau đầu","Tóc mọc nhanh hơn","Tăng chiều cao","Mắt nhìn rõ hơn"],0,"Khi căng thẳng, cơ thể chuẩn bị 'chiến đấu hoặc bỏ chạy': tim đập nhanh, cơ căng lên."],
+[31,"Khi căng thẳng, cơ thể tiết ra nhiều hoóc-môn nào?",["Cortisol và adrenaline","Insulin","Melatonin","Vitamin C"],0,"Cortisol và adrenaline làm tim đập nhanh, thở gấp. Thư giãn giúp lượng hoóc-môn này giảm xuống."],
+[31,"Nếu cảm thấy căng thẳng, buồn bã kéo dài nhiều tuần, bạn nên:",["Nói với người lớn tin cậy hoặc chuyên gia tâm lí","Giữ kín một mình","Cố chịu đựng cho qua","Thức khuya chơi game để quên"],0,"Căng thẳng kéo dài cần được chia sẻ. Thầy cô, bố mẹ, chuyên gia tâm lí học đường luôn sẵn sàng giúp bạn."],
+[32,"Hít thở chậm và sâu giúp:",["Nhịp tim chậm lại, cơ thể bình tĩnh hơn","Tim đập nhanh hơn","Tăng hoóc-môn căng thẳng","Không có tác dụng gì"],0,"Thở chậm báo cho não biết 'mình an toàn', nhịp tim và hơi thở dịu lại."],
+[32,"Kĩ thuật 'thở hộp' (box breathing) là:",["Hít vào 4 giây – giữ 4 giây – thở ra 4 giây – giữ 4 giây","Thở thật nhanh trong 1 phút","Nín thở lâu nhất có thể","Thở bằng miệng thật mạnh"],0,"Bốn nhịp đều nhau như bốn cạnh hình vuông. Lặp lại 3–4 lần là thấy nhẹ người."],
+[32,"Khi thở bụng đúng cách, lúc hít vào phần nào phồng lên?",["Bụng","Vai","Cổ","Lưng"],0,"Đặt tay lên bụng: hít vào bụng phồng, thở ra bụng xẹp. Vai giữ yên, thả lỏng."],
+[32,"Vận động (đi bộ, chạy, nhảy dây) giúp giảm căng thẳng vì:",["Cơ thể tiết endorphin giúp tâm trạng tốt hơn","Làm mệt quá nên quên hết","Làm tăng cortisol","Không có tác dụng"],0,"Chỉ 10–15 phút vận động cũng giúp đầu óc thoải mái hơn."],
+[32,"Kĩ thuật 'thả lỏng cơ' được thực hiện thế nào?",["Gồng chặt một nhóm cơ vài giây rồi thả lỏng hoàn toàn","Ngồi im không cử động cả ngày","Bẻ khớp tay thật mạnh","Chạy thật nhanh tới kiệt sức"],0,"Gồng rồi thả giúp bạn nhận ra cảm giác thư giãn, lần lượt từ bàn chân lên tới vai và mặt."],
+[33,"Học sinh tuổi 12–13 nên ngủ khoảng bao lâu mỗi đêm?",["Khoảng 8–10 tiếng hoặc hơn","3–4 tiếng","5–6 tiếng","Càng ít càng tốt"],0,"Ngủ đủ giúp não ghi nhớ bài học và cân bằng cảm xúc. Thiếu ngủ làm dễ cáu và căng thẳng hơn."],
+[33,"Vì sao nên tắt điện thoại khoảng 1 giờ trước khi ngủ?",["Ánh sáng xanh từ màn hình làm cơ thể tiết ít melatonin, khó ngủ","Để điện thoại không bị nóng","Vì điện thoại phát ra âm thanh","Không có lí do gì"],0,"Melatonin là hoóc-môn báo hiệu 'đến giờ ngủ'. Ánh sáng màn hình buổi tối làm nó giảm."],
+[33,"Uống cà phê hoặc nước tăng lực vào buổi tối có thể:",["Làm khó ngủ, tim đập nhanh, bồn chồn hơn","Giúp ngủ sâu hơn","Giảm căng thẳng ngay","Giúp cao lên"],0,"Caffeine kích thích hệ thần kinh nhiều giờ liền, không tốt cho tuổi học sinh."],
+[33,"Khi có một bài tập lớn khiến bạn lo lắng, cách tốt là:",["Chia thành nhiều phần nhỏ và làm từng phần","Để đến sát hạn rồi làm một lần","Bỏ không làm","Thức trắng đêm để làm"],0,"Việc nhỏ dễ bắt đầu hơn. Hoàn thành từng phần giúp bạn tự tin và bớt áp lực."],
+[33,"Khi học lâu, cách nghỉ giải lao hiệu quả là:",["Học khoảng 25 phút rồi nghỉ 5 phút, đứng dậy vươn vai","Học liền 5 tiếng không nghỉ","Nghỉ bằng cách lướt mạng xã hội 1 tiếng","Không bao giờ nghỉ"],0,"Đây là cách 'Pomodoro'. Nghỉ ngắn, rời mắt khỏi màn hình giúp não nạp lại năng lượng."],
+[34,"Khi đang rất tức giận, việc nên làm đầu tiên là:",["Dừng lại, hít thở sâu vài lần","Nói ngay điều đầu tiên nghĩ ra","Ném đồ đạc","Nhắn tin mắng người khác"],0,"Vài hơi thở sâu cho não thời gian bình tĩnh, giúp bạn không làm điều phải hối hận."],
+[34,"Viết nhật kí cảm xúc giúp ích gì?",["Hiểu và sắp xếp lại cảm xúc của chính mình","Làm cảm xúc tệ hơn","Chỉ để khoe với bạn bè","Không có tác dụng"],0,"Viết ra giấy giúp suy nghĩ rối rắm trở nên rõ ràng, nhẹ lòng hơn."],
+[34,"Thay vì nghĩ 'Mình kém quá, chẳng làm được gì', cách nghĩ lành mạnh hơn là:",["'Lần này chưa tốt, mình sẽ thử cách khác'","'Mình sẽ không bao giờ làm được'","'Tất cả là lỗi của người khác'","'Bỏ cuộc cho xong'"],0,"Đây là 'tư duy phát triển': sai lầm là cơ hội để học, không phải là bạn kém."],
+[34,"Gọi tên cảm xúc của mình (ví dụ: 'mình đang lo lắng') giúp:",["Bình tĩnh hơn và dễ kiểm soát cảm xúc","Cảm xúc mạnh lên gấp đôi","Bị bạn bè chê cười","Không có tác dụng"],0,"Khi gọi tên được cảm xúc, não lí trí 'bật lên' và cảm xúc dịu xuống."],
+[34,"Kĩ thuật 5–4–3–2–1 dùng khi lo lắng là gì?",["Gọi tên 5 thứ nhìn thấy, 4 thứ chạm được, 3 âm thanh, 2 mùi, 1 vị","Đếm ngược từ 5 rồi hét to","Chạy 5 vòng sân","Ăn 5 cái bánh"],0,"Kĩ thuật này đưa sự chú ý về hiện tại qua các giác quan, giúp bớt lo lắng."],
+[35,"Bạn thân có vẻ buồn bã nhiều ngày, bạn nên:",["Hỏi han, lắng nghe và gợi ý bạn nói với người lớn tin cậy","Lờ đi vì không phải việc của mình","Kể chuyện của bạn cho cả lớp","Trêu để bạn vui lên"],0,"Một lời hỏi han chân thành có ý nghĩa rất lớn. Nếu chuyện nghiêm trọng, hãy cùng bạn tìm người lớn giúp."],
+[35,"Ở Việt Nam, Tổng đài quốc gia bảo vệ trẻ em (miễn phí, 24/7) là số:",["111","113","114","115"],0,"Gọi 111 khi bạn hoặc bạn bè cần giúp đỡ, bị bạo lực, bắt nạt. 113 là công an, 114 cứu hỏa, 115 cấp cứu."],
+[35,"Thế nào là lắng nghe tốt?",["Nhìn bạn, không ngắt lời, không phán xét","Vừa nghe vừa bấm điện thoại","Ngắt lời để kể chuyện của mình","Cười khi bạn kể chuyện buồn"],0,"Đôi khi người khác chỉ cần được lắng nghe, không cần lời khuyên ngay."],
+[35,"Chia sẻ khó khăn với người mình tin cậy là:",["Một cách dũng cảm và hiệu quả để giảm căng thẳng","Dấu hiệu yếu đuối","Làm phiền người khác","Chỉ nên làm khi đã quá muộn"],0,"Chia sẻ giúp gánh nặng nhẹ đi một nửa. Cần giúp đỡ là bình thường!"],
+[35,"Nếu bị bắt nạt trên mạng, bạn nên:",["Lưu lại bằng chứng, chặn người đó và báo với người lớn","Đáp trả lại bằng lời lẽ xấu","Giữ im lặng một mình","Xóa hết mọi thứ và không kể với ai"],0,"Bằng chứng giúp người lớn xử lí đúng. Bạn không có lỗi khi bị bắt nạt."]
+);
+Object.assign(window.LESSON,{31:"Hiểu về căng thẳng",32:"Hít thở & cơ thể",33:"Giấc ngủ & thói quen",34:"Cảm xúc & suy nghĩ",35:"Kết nối & tìm hỗ trợ"});
+window.STRESS=[31,32,33,34,35];window.PHYS=[8,9,10,11,12,13,14,15,16,17,18,19,20];
+window.tagOf=k=>(k>=30?"🌿 Thư giãn":"🔬 Bài "+k)+" · "+window.LESSON[k];
+</script>
+<script>
+const Q=window.Q,LESSON=window.LESSON;
+const AV=["🐢","🦦","🐨","🐼","🦥","🐳","🦔","🐝","🐸","🦊","🐰","🐧"];
+const MOOD=["😣","😟","😐","🙂","😄"],MOODT=["Rất căng thẳng","Hơi lo","Bình thường","Khá thoải mái","Rất thư thái"];
+const NICE=["Bạn đang làm rất tốt rồi đấy 🌿","Hít một hơi thật sâu… thở ra thật chậm.","Sai cũng là một cách học — không sao cả!","Mỗi câu trả lời là một hạt giống mới 🌱","Uống một ngụm nước nhé, bạn xứng đáng được nghỉ.","Bạn không cần hoàn hảo, chỉ cần tiến bộ.","Thả lỏng vai, thả lỏng tay, mình chơi tiếp nào!","Bạn mạnh mẽ hơn bạn nghĩ đấy 💛"];
+const WRONG=["Không sao đâu, mình cùng xem lại nhé 🌧️→🌈","Gần đúng rồi! Lần sau chắc chắn được.","Hít thở nhẹ… đây là đáp án đúng nè:","Ai cũng có lúc nhầm — quan trọng là mình hiểu ra."];
+const BOX=[{e:"☁️",n:"Hộp Mây"},{e:"🍃",n:"Hộp Lá"},{e:"⭐",n:"Hộp Sao"}];
+const REW=[{w:30,v:10,p:"🌱"},{w:28,v:20,p:"🌿"},{w:22,v:30,p:"🌷"},{w:12,v:40,p:"🌼"},{w:6,v:60,p:"🌻"},{w:2,v:100,p:"🌸"}];
+
+const $=s=>document.querySelector(s),app=$("#app");
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a};
+let G={nick:"",av:AV[0],m0:null,m1:null};
+let P=null;      // phiên chơi hiện tại
+let NET=null;    // {code,pid,secret,es,round,state}
+try{const s=JSON.parse(localStorage.getItem("vby")||"{}");if(s.nick)G.nick=s.nick;if(s.av)G.av=s.av}catch(e){}
+const save=()=>{try{localStorage.setItem("vby",JSON.stringify({nick:G.nick,av:G.av}))}catch(e){}};
+const post=(u,b)=>fetch(u,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(b)}).then(async r=>{const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||"Lỗi kết nối");return j});
+
+// ---------- Âm thanh dịu nhẹ ----------
+let AC=null,amb=null,sndOn=true;
+function ac(){try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();AC.resume()}catch(e){}return AC}
+function tone(f,d=.5,g=.12){const c=ac();if(!c||!sndOn)return;const o=c.createOscillator(),v=c.createGain();o.frequency.value=f;v.gain.setValueAtTime(0,c.currentTime);
+v.gain.linearRampToValueAtTime(g,c.currentTime+.02);v.gain.exponentialRampToValueAtTime(.0001,c.currentTime+d);o.connect(v);v.connect(c.destination);o.start();o.stop(c.currentTime+d+.05)}
+const chime=()=>{tone(784,.6);setTimeout(()=>tone(1047,.8),110);setTimeout(()=>tone(1319,1),220)};
+const soft=()=>{tone(392,.6,.08);setTimeout(()=>tone(330,.8,.07),150)};
+function ambient(on){const c=ac();if(!c)return;if(amb){amb.g.gain.linearRampToValueAtTime(0,c.currentTime+1);const a=amb;setTimeout(()=>a.o.forEach(o=>o.stop()),1200);amb=null}
+if(!on)return;const g=c.createGain();g.gain.value=0;g.connect(c.destination);g.gain.linearRampToValueAtTime(.05,c.currentTime+2);
+const o=[196,246.94,293.66,392].map((f,i)=>{const x=c.createOscillator(),v=c.createGain(),l=c.createOscillator(),lg=c.createGain();x.frequency.value=f;v.gain.value=.25;
+l.frequency.value=.05+i*.03;lg.gain.value=.2;l.connect(lg);lg.connect(v.gain);x.connect(v);v.connect(g);x.start();l.start();return x});amb={g,o}}
+function toggleSnd(){sndOn=!sndOn;ambient(sndOn&&!!P&&!P.ended);document.querySelectorAll(".snd").forEach(b=>b.textContent=sndOn?"🔊":"🔈")}
+function leaves(n=6){for(let i=0;i<n;i++){const l=document.createElement("div");l.className="leaf";l.textContent=["🍃","🌸","✨","🍀"][i%4];l.style.left=Math.random()*95+"vw";
+l.style.animationDuration=5+Math.random()*5+"s";l.style.animationDelay=Math.random()*2+"s";document.body.append(l);setTimeout(()=>l.remove(),12000)}}
+function floatTxt(t){const d=document.createElement("div");d.className="float";d.textContent=t;document.body.append(d);setTimeout(()=>d.remove(),1300)}
+
+// ---------- Trang chính ----------
+function home(){P=null;ambient(false);leaveRoom();
+const code=new URLSearchParams(location.search).get("code")||"";
+app.innerHTML=`<div class="card c">
+<div class="cmt">chu_de: giai_toa_cang_thang // khtn7.vat-li</div>
+<h1>VƯỜN_BÌNH_YÊN</h1>
+<div class="term" id="term"></div>
+<p class="m">Game giải tỏa căng thẳng: học cách thở, ngủ, gọi tên cảm xúc và tìm người hỗ trợ, kèm ôn Vật lí KHTN 7. Mở hộp quà, trồng khu vườn của riêng bạn, nghỉ hít thở giữa chừng. Trả lời sai không bị trừ điểm, cứ thoải mái mà chơi!</p>
+<button class="btn p" id="join">🚪 Vào phòng của lớp</button>
+<button class="btn" id="solo">🌱 Chơi một mình</button>
+<p class="m small" style="margin-top:14px">${Q.filter(q=>q[0]>30).length} câu giải tỏa căng thẳng · ${Q.filter(q=>q[0]<30).length} câu Vật lí KHTN 7</p>
+</div>`;
+typeLines($("#term"),["> khởi động hệ thống thư giãn... [OK]","> nạp "+Q.length+" câu hỏi thư giãn + Vật lí... [OK]","> mức căng thẳng: đang giảm dần 🌿"]);
+$("#solo").onclick=()=>{ac();setup("solo")};$("#join").onclick=()=>{ac();setup("join",code)};
+if(code)setup("join",code)}
+
+function setup(mode,code=""){
+app.innerHTML=`<div class="card">
+<h2>${mode=="join"?"Vào phòng chơi":"Chuẩn bị nào"}</h2>
+${mode=="join"?`<div class="lbl">Mã phòng (4 số)</div><input type="text" id="code" inputmode="numeric" maxlength="4" placeholder="VD: 2468" value="${esc(code.replace(/\D/g,"").slice(0,4))}">`:""}
+<div class="lbl">Tên của bạn</div><input type="text" id="nick" maxlength="16" placeholder="Biệt danh" value="${esc(G.nick)}">
+<div class="lbl">Chọn bạn đồng hành</div><div class="av" id="av">${AV.map(a=>`<button class="${a==G.av?"on":""}">${a}</button>`).join("")}</div>
+<div class="lbl">Lúc này bạn cảm thấy thế nào?</div><div class="mood" id="md">${MOOD.map((e,i)=>`<button title="${MOODT[i]}">${e}</button>`).join("")}</div>
+<p class="m small c" id="mdt">Chọn một biểu cảm thật lòng nhé — không ai chấm điểm cái này đâu.</p>
+${mode=="solo"?`<div class="lbl">Chủ đề</div><div class="row" id="top"><button class="btn s on" data-t="s">🌿 Giải tỏa căng thẳng</button><button class="btn s" data-t="p">🔬 Vật lí KHTN 7</button><button class="btn s" data-t="a">✨ Kết hợp</button></div>
+<div class="lbl">Số câu hỏi</div><div class="row" id="len"><button class="btn s" data-n="10">10 câu</button><button class="btn s" data-n="20">20 câu</button><button class="btn s" data-n="999">Tất cả</button></div>`:`<p class="err" id="er"></p><button class="btn p" id="go">Vào phòng →</button>`}
+<button class="btn s" id="back">← Quay lại</button></div>`;
+$("#back").onclick=()=>{history.replaceState(null,"",location.pathname);home()};
+$("#av").querySelectorAll("button").forEach((b,i)=>b.onclick=()=>{G.av=AV[i];$("#av").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x==b))});
+$("#md").querySelectorAll("button").forEach((b,i)=>b.onclick=()=>{G.m0=i;$("#md").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x==b));$("#mdt").textContent=MOODT[i]});
+const ok=()=>{G.nick=($("#nick").value||"").trim().slice(0,16);if(!G.nick){$("#nick").focus();$("#nick").placeholder="Nhập tên trước nhé 🙂";return false}if(G.m0==null)G.m0=2;save();return true};
+if(mode=="solo"){let top="s";$("#top").querySelectorAll("button").forEach(b=>b.onclick=()=>{top=b.dataset.t;$("#top").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x==b))});
+$("#len").querySelectorAll("button").forEach(b=>b.onclick=()=>{if(!ok())return;const pool=top=="s"?Q.filter(q=>q[0]>30):top=="p"?Q.filter(q=>q[0]<30):Q;start({n:Math.min(+b.dataset.n,pool.length),pool})})}
+else $("#go").onclick=async()=>{const c=($("#code").value||"").replace(/\D/g,"");if(c.length!=4){$("#er").textContent="Mã phòng gồm 4 chữ số.";$("#code").focus();return}if(!ok())return;
+$("#go").disabled=true;$("#go").textContent="Đang vào…";$("#er").textContent="";
+try{await joinRoom(c)}catch(e){$("#er").textContent=e.message;$("#go").disabled=false;$("#go").textContent="Thử lại"}}}
+
+function newSession(o){return{qs:shuf(Q),i:0,score:0,ok:0,ans:0,streak:0,best:0,garden:[],breaths:0,miss:[],...o}}
+function start(o){P=newSession({...o,qs:shuf(o.pool||Q)});G.m1=null;ambient(sndOn);leaves(8);question()}
+
+function topBar(){return `<div class="top"><span class="me">${G.av}</span><span class="nm">${esc(G.nick)}</span>
+${P.live?`<span class="pill tm" id="tm">⏱ --:--</span>`:`<span class="pill tm">${Math.min(P.i+1,P.n)}/${P.n}</span>`}
+<span class="pill" id="sc">☀️ ${P.score}</span><button class="ic snd" onclick="toggleSnd()">${sndOn?"🔊":"🔈"}</button><button class="ic" onclick="breathe(true)" title="Nghỉ hít thở">🫧</button></div>
+<div class="garden">${P.garden.length?P.garden.map(p=>`<span>${p}</span>`).join(""):`<span class="e">Khu vườn của bạn sẽ mọc lên ở đây…</span>`}</div>`}
+
+function question(){if(!P||P.ended)return;
+if(!P.live&&P.i>=P.n)return finish();
+if(P.i>=P.qs.length)P.qs=P.qs.concat(P.pool?shuf(P.pool):shuf(Q));
+const q=P.qs[P.i],order=shuf([0,1,2,3]);
+app.innerHTML=topBar()+`<div class="card"><span class="tag">${tagOf(q[0])}</span><div class="q">${esc(q[1])}</div>
+<div class="ans">${order.map((k,j)=>`<button class="b${j}" data-k="${k}">${esc(q[2][k])}</button>`).join("")}</div><div id="fb"></div></div>`;
+tick();app.querySelectorAll(".ans button").forEach(b=>b.onclick=()=>answer(+b.dataset.k,q))}
+
+function answer(k,q){if(P.locked||P.ended)return;P.locked=1;P.ans++;const right=k==q[3];
+app.querySelectorAll(".ans button").forEach(b=>{b.onclick=null;const kk=+b.dataset.k;b.classList.toggle("dim",kk!=q[3]);b.classList.toggle("ok",kk==q[3])});
+if(right){P.ok++;P.streak++;P.best=Math.max(P.best,P.streak);chime();
+let bonus="";if(P.streak%3==0){P.score+=10;bonus=`<br>🔥 Chuỗi ${P.streak} câu đúng liên tiếp: <b>+10 ☀️</b>`}
+$("#fb").innerHTML=`<div class="msg ok"><b>Chính xác! 🎉</b> ${esc(q[4])}${bonus}</div><div class="lbl c">Chọn một hộp quà:</div>
+<div class="boxes">${BOX.map((b,i)=>`<button data-i="${i}"><span class="e">${b.e}</span>${b.n}</button>`).join("")}</div>`;
+$("#fb").querySelectorAll(".boxes button").forEach(b=>b.onclick=()=>openBox())}
+else{P.streak=0;soft();P.miss.push(q);
+$("#fb").innerHTML=`<div class="msg"><b>${WRONG[Math.random()*WRONG.length|0]}</b><br>Đáp án đúng: <b>${esc(q[2][q[3]])}</b><br>${esc(q[4])}</div><button class="btn" id="nx">Tiếp tục 🌿</button>`;
+$("#nx").onclick=next}
+sync()}
+
+function openBox(){if(P.opened===P.i)return;P.opened=P.i;let r=Math.random()*100,rw=REW[0];for(const x of REW){if(r<x.w){rw=x;break}r-=x.w}
+P.score+=rw.v;P.garden.push(rw.p);floatTxt("+"+rw.v+" ☀️");
+$("#fb").querySelector(".boxes").outerHTML=`<div class="c"><div class="reveal">${rw.p}</div><b style="font-size:22px">+${rw.v} ☀️</b>${rw.v>=60?" — hiếm lắm đó! ✨":""}
+<p class="m">${NICE[Math.random()*NICE.length|0]}</p></div><button class="btn" id="nx">Câu tiếp theo →</button>`;
+$("#nx").onclick=next;const sc=$("#sc");if(sc)sc.textContent="☀️ "+P.score;sync()}
+
+function next(){if(!P||P.ended)return;P.locked=0;P.i++;
+if(P.ans>0&&P.ans%5==0&&(P.live||P.i<P.n))return breathe(false);question()}
+
+// ---------- Trạm hít thở ----------
+let BT=null;
+function breathe(manual){if(!P||P.ended)return;clearTimeout(BT);const back=()=>{clearTimeout(BT);if(P&&!P.ended)question()};
+app.innerHTML=topBar()+`<div class="card c"><h2>🫧 Trạm hít thở</h2><p class="m">Ngồi thẳng, thả lỏng vai. Nhìn vòng tròn và thở theo nhé.</p>
+<div class="breath" id="br">Sẵn sàng…</div><p id="bc" class="m">Nhịp 4 – 4 – 4 · 3 lượt</p>
+<button class="btn s" id="sk">${manual?"Quay lại chơi":"Bỏ qua"}</button></div>`;
+tick();$("#sk").onclick=back;
+const steps=[["Hít vào…",1.15],["Giữ hơi…",1.15],["Thở ra…",.6]];let s=0,cyc=0;
+const run=()=>{const el=$("#br");if(!el||!P)return;if(cyc>=3){el.textContent="Tuyệt vời 💚";el.style.transform="scale(.9)";
+if(!manual||!P.breathBonus){P.breaths++;P.score+=15;P.garden.push("🍀");floatTxt("+15 ☀️");if(manual)P.breathBonus=1;sync()}
+$("#bc").textContent="Bạn nhận được +15 ☀️ và một cây cỏ bốn lá 🍀";$("#sk").textContent="Chơi tiếp →";return}
+const [t,sc]=steps[s];el.textContent=t;el.style.transform=`scale(${sc})`;if(s==0)tone(262,3.5,.04);if(s==2)tone(196,3.5,.04);
+$("#bc").textContent=`Lượt ${cyc+1}/3`;s++;if(s==3){s=0;cyc++}BT=setTimeout(run,4000)};BT=setTimeout(run,600)}
+
+// ---------- Kết thúc ----------
+function finish(){if(!P||P.finished)return;P.finished=1;P.ended=1;clearTimeout(BT);clearInterval(TI);sync(true);ambient(false);leaves(14);chime();
+app.innerHTML=`<div class="card c"><div style="font-size:48px">🌈</div><h2>${P.live?"Hết giờ! ":""}Khu vườn của ${esc(G.nick)}</h2>
+<div class="garden" style="justify-content:center;font-size:30px">${P.garden.map(p=>`<span>${p}</span>`).join("")||"🌱"}</div>
+<div class="stat"><div><b>☀️ ${P.score}</b>điểm nắng</div><div><b>${P.ok}/${P.ans}</b>câu đúng</div><div><b>🔥 ${P.best}</b>chuỗi dài nhất</div></div>
+<div class="lbl">Bây giờ bạn cảm thấy thế nào?</div><div class="mood" id="md2">${MOOD.map(e=>`<button>${e}</button>`).join("")}</div><p id="mres" class="m"></p>
+<div id="lbw"></div>
+${P.miss.length?`<details style="text-align:left;margin-top:10px"><summary><b>📘 Ôn lại ${new Set(P.miss).size} câu chưa đúng</b></summary>${[...new Set(P.miss)].map(q=>`<div class="msg"><b>${tagOf(q[0])}:</b> ${esc(q[1])}<br>→ <b>${esc(q[2][q[3]])}</b>. ${esc(q[4])}</div>`).join("")}</details>`:""}
+${P.live?`<p class="m small" style="margin-top:12px">Chờ thầy/cô mở ván mới, hoặc:</p><button class="btn s" id="hm">🚪 Rời phòng</button>`:`<button class="btn" id="again">🌱 Chơi lại</button><button class="btn s" id="hm">🏠 Trang chính</button>`}</div>`;
+$("#md2").querySelectorAll("button").forEach((b,i)=>b.onclick=()=>{G.m1=i;$("#md2").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x==b));
+const d=i-G.m0;$("#mres").innerHTML=d>0?`Từ ${MOOD[G.m0]} lên ${MOOD[i]} — tâm trạng của bạn đã nhẹ nhõm hơn rồi! 💚`:d==0?`Vẫn là ${MOOD[i]}. Cảm ơn bạn đã dành thời gian cho bản thân 🌿`:`Hôm nay có vẻ hơi mệt. Hãy nghỉ ngơi và trò chuyện với người bạn tin tưởng nhé 💛`;sync(true)});
+if(!P.live)$("#again").onclick=()=>start({n:P.n});
+$("#hm").onclick=()=>{history.replaceState(null,"",location.pathname);home()};
+if(P.live&&NET&&NET.state)renderBoard(NET.state)}
+
+// ---------- Hẹn giờ ----------
+let TI=null;
+function tick(){clearInterval(TI);if(!P||!P.live)return;const f=()=>{const el=$("#tm"),l=Math.max(0,P.endAt-Date.now());if(el)el.textContent="⏱ "+fmt(l)};f();TI=setInterval(f,500)}
+const fmt=ms=>{const s=Math.ceil(ms/1000);return String(s/60|0).padStart(2,"0")+":"+String(s%60).padStart(2,"0")};
+
+// ---------- Kết nối phòng ----------
+let ST=null,lastSent="";
+function sync(now){if(!NET||!P||!P.live)return;clearTimeout(ST);
+const send=()=>{const b={code:NET.code,pid:NET.pid,secret:NET.secret,round:NET.round,score:P.score,ok:P.ok,ans:P.ans,done:!!P.finished,m1:G.m1},k=JSON.stringify(b);
+if(k===lastSent)return;lastSent=k;post("/api/update",b).catch(()=>{lastSent=""})};
+now?send():ST=setTimeout(send,300)}
+async function joinRoom(code){
+const j=await post("/api/join",{code,nick:G.nick,av:G.av,m0:G.m0});
+NET={code,pid:j.pid,secret:j.secret,round:j.state.round,state:j.state};
+try{sessionStorage.setItem("vby-net",JSON.stringify({code,pid:j.pid,secret:j.secret}))}catch(e){}
+history.replaceState(null,"","?code="+code);
+P=newSession({live:true,waiting:1,ended:1});G.m1=null;openStream();onState(j.state,true)}
+function openStream(){if(!NET)return;if(NET.es)NET.es.close();
+const es=new EventSource(`/api/stream?code=${NET.code}&pid=${encodeURIComponent(NET.pid)}&secret=${encodeURIComponent(NET.secret)}`);NET.es=es;
+es.addEventListener("state",e=>{try{onState(JSON.parse(e.data))}catch(x){}});
+es.addEventListener("kicked",()=>gone("Bạn đã được mời ra khỏi phòng."));
+es.addEventListener("closed",()=>gone("Phòng đã đóng. Cảm ơn bạn đã chơi! 🌿"));
+es.onerror=()=>{const net=NET;setTimeout(()=>{if(NET===net&&es.readyState===2)fetch(`/api/stream?code=${net.code}&pid=${net.pid}&secret=${net.secret}`,{method:"HEAD"}).then(r=>{if(r.status==404)gone("Phòng không còn nữa (máy chủ có thể đã khởi động lại).");else openStream()}).catch(()=>setTimeout(openStream,3000))},2500)}}
+function gone(msg){leaveRoom(true);P=null;ambient(false);history.replaceState(null,"",location.pathname);
+app.innerHTML=`<div class="card c"><div style="font-size:48px">🍃</div><p>${esc(msg)}</p><button class="btn" onclick="home()">🏠 Trang chính</button></div>`}
+function leaveRoom(silent){clearInterval(TI);if(!NET)return;const n=NET;NET=null;if(n.es)n.es.close();
+try{sessionStorage.removeItem("vby-net")}catch(e){}
+if(!silent)post("/api/leave",{code:n.code,pid:n.pid,secret:n.secret}).catch(()=>{})}
+
+function onState(s,first){if(!NET||!P)return;NET.state=s;
+const pool=s.lessons&&s.lessons.length?Q.filter(q=>s.lessons.includes(q[0])):Q;
+if(s.round!==NET.round){NET.round=s.round;lastSent="";P=newSession({live:true,waiting:1,ended:1});G.m1=null}
+if(s.phase==="lobby"){if(!P.waiting||first||!$("#wl")){P=newSession({live:true,waiting:1,ended:1});waitScreen()}lobbyList(s)}
+else if(s.phase==="play"){
+ if(P.waiting){P=newSession({live:true,pool,qs:shuf(pool),endAt:Date.now()+s.left});
+  if(NET.restored){const me=(s.board||[]).find(p=>p.id===s.me);if(me)Object.assign(P,{score:me.score,ok:me.ok,ans:me.ans});NET.restored=0}ambient(sndOn);leaves(8);sync(true);question()}
+ else if(!P.finished)P.endAt=Date.now()+s.left;
+ if(!P.finished&&s.left<=0)finish()}
+else if(s.phase==="end"){
+ if(P.waiting){P=newSession({live:true,ended:1,finished:0});P.waiting=0;finish()}
+ else if(!P.finished)finish();
+ else renderBoard(s)}}
+
+function waitScreen(){app.innerHTML=`<div class="card c"><h2>Đã vào phòng ${esc(NET.code)} 🎉</h2><p class="m">Đang chờ thầy/cô bắt đầu… Trong lúc chờ, thở cùng vòng tròn nhé.</p>
+<div class="breath" id="wb">${G.av}</div><div id="wl"></div><button class="btn s" id="lv">Rời phòng</button></div>`;
+$("#lv").onclick=()=>{history.replaceState(null,"",location.pathname);home()};
+let big=0;const b=()=>{const el=$("#wb");if(!el)return;big=!big;el.style.transform=`scale(${big?1.1:.65})`;setTimeout(b,4000)};setTimeout(b,300)}
+function lobbyList(s){const el=$("#wl");if(!el)return;const ps=s.board||[];
+el.innerHTML=`<p><b>${ps.length}</b> người trong phòng</p><div style="font-size:28px;line-height:1.4">${ps.map(p=>`<span title="${esc(p.nick)}">${AV.includes(p.av)?p.av:"🌱"}</span>`).join(" ")}</div>`}
+function renderBoard(s){const el=$("#lbw");if(!el)return;const ps=s.board||[];if(!ps.length){el.innerHTML="";return}
+el.innerHTML=`<div class="lbl" style="text-align:left">🏆 Bảng vườn của lớp</div><ul class="lb">${ps.slice(0,20).map((p,i)=>`<li class="${p.id===s.me?"me":""}"><span class="r">${i<3?["🥇","🥈","🥉"][i]:i+1}</span>
+<span class="a">${AV.includes(p.av)?p.av:"🌱"}</span><span class="n">${esc(p.nick)}${p.id===s.me?" (bạn)":""}</span>
+<span class="m small">${p.ok}/${p.ans}</span><span class="s">☀️ ${p.score}</span></li>`).join("")}</ul>`}
+
+// ---------- Khởi động (khôi phục nếu lỡ tải lại trang) ----------
+(function(){let n=null;try{n=JSON.parse(sessionStorage.getItem("vby-net")||"null")}catch(e){}
+if(n&&n.code){NET={...n,round:-1,restored:1};P=newSession({live:true,waiting:1,ended:1});app.innerHTML=`<div class="card c"><p class="m">Đang vào lại phòng ${esc(n.code)}…</p></div>`;openStream()}
+else home()})();
+</script>
+</body>
+</html>

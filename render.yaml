@@ -1,0 +1,19 @@
+# Tùy chọn: dùng "New → Blueprint" trên Render để tạo cả web + database cùng lúc.
+databases:
+  - name: vuon-binh-yen-db
+    plan: free
+services:
+  - type: web
+    name: vuon-binh-yen
+    runtime: node
+    plan: free
+    buildCommand: "npm install"
+    startCommand: node server.js
+    healthCheckPath: /healthz
+    envVars:
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: vuon-binh-yen-db
+          property: connectionString

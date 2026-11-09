@@ -1,0 +1,9 @@
+{
+  "name": "vuon-binh-yen",
+  "version": "1.0.0",
+  "description": "Game kiểu Blooket giải tỏa căng thẳng – ôn KHTN 7 Vật lí bài 8–20. Trang người chơi + trang quản lí.",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=18" },
+  "license": "MIT"
+}
